@@ -14,7 +14,11 @@
 库中文本的相似度，并返回最相关的答案。整个系统通过 pickle 实现模型的持久化，使
 得可以反复使用和更新模型，以提升问答系统的效率和准确性。
 
-
+<p align="center">
+<img src=".\architecture.png" height = "330" alt="" align=center />
+<br><br>
+<b>Figure 1.</b> Overall Framework of MGDCF.
+</p>
  
 # Requirements
 
