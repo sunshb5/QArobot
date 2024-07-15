@@ -4,39 +4,26 @@
 
 # Introduction
 
-本项目主要是针对论文"[MGDCF: Distance Learning via Markov Graph Diffusion for Neural Collaborative Filtering](https://arxiv.org/abs/2204.02338)"的复现与改进。并在原论文的基础上做出了以下三点创新：
-+ 增加了LightGCN-InfoBPR，DropEdge-InfoBPR等模型实验对照组，以验证论文中提出的排序损失InfoBPR函数的泛化性；
-+ 更改了计算InfoBPR时采取的负样本数量，以验证不同数据、模型上InfoBPR何时更有效，调整后在异构MGDN、同构MGDN上均有一定的提升；
-+ 提出了如下结论：最优排序损失函数Loss_Rank应根据不同数据集、不同模型的特征进行选择，采用了更多负样本数量的InfoBPR在某些情况下并不一定优于BPR的效果；
-    
-本仓库实现了MGDCF的 TensorFlow 版本。
-
-<p align="center">
-<img src=".\architecture.png" height = "330" alt="" align=center />
-<br><br>
-<b>Figure 1.</b> Overall Framework of MGDCF.
-</p>
-
-
-
-# Paper Links
-
-+ Paper Access:
-    - **IEEE Xplore**: [https://ieeexplore.ieee.org/document/10384729](https://ieeexplore.ieee.org/document/10384729)
-    - **ArXiv**: [https://arxiv.org/abs/2204.02338](https://arxiv.org/abs/2204.02338)
-
+本项目是基于知识库与 Word2Vec 的多进程计算问答系统；
++ 通过使用 Docx 解析器将文档内容转换为文本数据，然后利用 jieba 进行文本分词
+处理。接着，使用 gensim 库中的 Word2Vec 模型训练文本数据，生成词向量表示，用
+于后续问题与文本相似度的计算。
++ 本问答系统的核心部分是 QARobot 类，其中包括训练模型和获取答案两个主要功
+能。训练模型阶段将语料库中的文本转换为句向量，并使用多进程计算问题与文本的相
+似度，以提高响应速度。在获取答案阶段，系统根据用户输入的问题，计算问题与知识
+库中文本的相似度，并返回最相关的答案。整个系统通过 pickle 实现模型的持久化，使
+得可以反复使用和更新模型，以提升问答系统的效率和准确性。
 
 
  
 # Requirements
 
-+ Linux
 + Python 3.10.12
-+ tensorflow == 2.15.0
-+ tf_geometric == 0.1.6
-+ tf_sparse == 0.0.17
-+ grecx == 0.0.8
-+ tqdm=4.66.4
++ numpy == 1.26.2
++ jieba == 0.42.1
++ docx == 0.2.4
++ pandas == 2.1.4
++ gensim == 4.3.2
  
 
 
@@ -45,85 +32,34 @@
 
     ├── ReadMe.md            // 帮助文档
     
-    ├── requirement.txt      // 环境依赖文件
+    ├── requirements.txt      // 环境依赖文件
 
-    ├── cf_task_handle.py    // 主函数文件，调用不同模型处理CF任务
+    ├── QA_startup.py    // 主函数文件,启动机器人
     
-    ├── mgdcf                // MGDCF框架，包含同构MGDN、异构MGDN、部分GNN模型的实现以及用到的tools
-    
-    │   ├── layers      // 包含处理CF任务的各种模型
-    
-    │       └── __init__.py
-    
-    │       └── hetero_mgdn.py    // 同构MGDN模型
-    
-    │       └── homo_mgdn.py      // 异构MGDN模型
-    
-    │       └── specific_gnn.py   // 其他部分GNN模型
-
-    │   ├── utils     // 包含模型用到的tools
-    
-    │       └── __init__.py
-    
-    │       └── homo_adjacency.py      // 同构图邻接矩阵建立
-    
-    │       └── normalized_factor.py   // 计算MGDN模型归一化分母
+    ├── utils            // tools
     
     │   └── __init__.py
+    
+    │   └──similarity.py    // 相似度计算
+    
+    │   └── text_segmentation.py      // 预处理分词
+    
+    │   └── text2vector.py   // 词向量训练
 
-    │   └── cache.py        // 构建缓存的tool，加速任务
+    │   ├── models
     
-    ├── scripts       // python运行脚本
+    │       └── __init__.py
     
-    │   ├── amazon-book
+    │       └── load_data.py      // 加载文本数据
     
-    │       └── ......
-
-    │   ├── gowalla
+    │       └── qa_system.py   // 多进程计算相似度的问答机器人
     
-    │       └── ......
-
-    │   ├── yelp
+    │   └── __init__.py
     
-    │       └── ......
-
  
 # Run
-
-您可以运行如下命令来执行MGDCF:
-```shell
-cd scripts
-sh ${DATASET}/$SCRIPT_NAME
-```
-例如:
-```shell
-cd scripts
-sh amazon-book/HeteroMGDCF_yelp.sh
-```
-您也可以直接在命令行执行：
-```shell
-python -u cf_task_handle.py ${DATASET} ${Other parameters needed}
-```
-您也可以在colab平台的jupyter notebook上执行(其T4 GPU运行时满足本项目的大部分环境)。
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1SAbCp3spIATpNhGD3pTJuFhm7L2EdKqR#scrollTo=N-De8-JcaSb7)
-
-
-
-
-# Cite
-
-```
-@ARTICLE{10384729,
-  author={Jun Hu and Bryan Hooi and Shengsheng Qian and Quan Fang and Changsheng Xu},
-  journal={IEEE Transactions on Knowledge and Data Engineering}, 
-  title={MGDCF: Distance Learning via Markov Graph Diffusion for Neural Collaborative Filtering}, 
-  year={2024},
-  volume={},
-  number={},
-  pages={1-16},
-  doi={10.1109/TKDE.2023.3348537}
-}
-```
++ 进行依赖项安装：pip install − r (chat_robot\) requirements.txt；
++ 注意：本项目需要以 QA_System 作为项目根路径打开，然后再安装依赖项，安装完成之后只需执行启动 python QA_satrtup 即可。
  
 
  
