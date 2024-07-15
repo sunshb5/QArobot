@@ -63,7 +63,7 @@
  
 # Run
 + 进行依赖项安装：pip install − r (chat_robot\) requirements.txt；
-+ 注意：本项目需要以 QA_System 作为项目根路径打开，然后再安装依赖项，安装完成之后只需执行启动 python QA_satrtup 即可。
++ 注意：本项目需要以 QA_System 作为项目根路径打开，然后再安装依赖项，安装完成之后只需执行启动 python QA_startup.py 即可。
  
 
  
